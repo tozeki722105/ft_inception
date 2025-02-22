@@ -1,5 +1,5 @@
-FROM ubuntu
+FROM debian:bullseye
 
-COPY hello.txt /tmp/hello.txt
+RUN apt update && apt install -y vim less nginx mariadb-server php-fpm
 
-CMD ["cat", "/tmp/hello.txt"]
+CMD ["bash"]
