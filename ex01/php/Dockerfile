@@ -4,8 +4,6 @@ RUN apt update && apt install -y vim less php-fpm wget tar
 
 COPY ./www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
-COPY ./index.php /var/www/html/index.php
-
 RUN mkdir /run/php
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh

@@ -14,14 +14,24 @@ PHP_ALIAS_NAME := php
 
 NETWORK_NAME := test
 
+BIND_PATH := $(PWD)/${PHP_DIR_PATH}
+DST_PATH := /var/www/html/
+
+cat:
+	cat ${BIND_PATH}index.php
+
 all:
 	docker build --no-cache -t ${PHP_IMAGE_NAME} -f ${PHP_DIR_PATH}${PHP_DOCKERFILE_PATH} ${PHP_DIR_PATH}${PHP_CONTEXT_PATH}
 	docker build --no-cache -t ${NGINX_IMAGE_NAME} -f ${NGINX_DIR_PATH}${NGINX_DOCKERFILE_PATH} ${NGINX_DIR_PATH}${NGINX_CONTEXT_PATH}
 
 run:
 	docker network create ${NETWORK_NAME}
-	docker run -d --network ${NETWORK_NAME} --network-alias ${PHP_ALIAS_NAME} --name ${PHP_CONTAINAR_NAME}  ${PHP_IMAGE_NAME}
-	docker run -d --network ${NETWORK_NAME} --network-alias ${NGINX_ALIAS_NAME} --name ${NGINX_CONTAINAR_NAME} -p 80:80 ${NGINX_IMAGE_NAME}
+	docker run -d --network ${NETWORK_NAME} --network-alias ${PHP_ALIAS_NAME} \
+		--mount type=bind,src=${BIND_PATH}index.php,dst=${DST_PATH}index.php \
+		--name ${PHP_CONTAINAR_NAME}  ${PHP_IMAGE_NAME}
+	docker run -d --network ${NETWORK_NAME} --network-alias ${NGINX_ALIAS_NAME} \
+		--mount type=bind,src=${BIND_PATH}index.php,dst=${DST_PATH}index.php \
+		--name ${NGINX_CONTAINAR_NAME} -p 80:80 ${NGINX_IMAGE_NAME}
 
 connect_clean:
 	docker network disconnect ${NETWORK_NAME} ${PHP_CONTAINAR_NAME}
