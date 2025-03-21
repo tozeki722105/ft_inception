@@ -29,10 +29,12 @@ out:
 		--name ${DB_CONTAINAR_NAME} ${DB_IMAGE_NAME}"
 
 all:
+	docker build --no-cache -t ${DB_IMAGE_NAME} -f ${DB_DIR_PATH}${DB_DOCKERFILE_PATH} ${DB_DIR_PATH}${DB_CONTEXT_PATH}
 	docker build --no-cache -t ${PHP_IMAGE_NAME} -f ${PHP_DIR_PATH}${PHP_DOCKERFILE_PATH} ${PHP_DIR_PATH}${PHP_CONTEXT_PATH}
 	docker build --no-cache -t ${NGINX_IMAGE_NAME} -f ${NGINX_DIR_PATH}${NGINX_DOCKERFILE_PATH} ${NGINX_DIR_PATH}${NGINX_CONTEXT_PATH}
-	docker build --no-cache -t ${DB_IMAGE_NAME} -f ${DB_DIR_PATH}${DB_DOCKERFILE_PATH} ${DB_DIR_PATH}${DB_CONTEXT_PATH}
 
+# mkdir -p $(HOME)/data/
+# mkdir $(HOME)/data/db mkdir $(HOME)/data/wp
 run:
 	docker network create ${NETWORK_NAME}
 	docker run -d --network ${NETWORK_NAME} --network-alias ${PHP_ALIAS_NAME} \
