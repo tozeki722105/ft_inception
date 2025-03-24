@@ -6,4 +6,3 @@ if [[ ! -e /var/www/html/wordpress ]]; then
 fi
 
 php-fpm7.4 -F
-
