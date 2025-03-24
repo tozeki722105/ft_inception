@@ -1,0 +1,19 @@
+services:
+  my-mariadb:
+    image: my-mariadb # ビルド後に割り当てられるイメージ名と同じにする
+    build:
+      context: . # Dockerfileのあるディレクトリ
+      dockerfile: ./db/Dockerfile # Dockerfileの名前
+    container_name: my-mariadb-container
+    volumes:
+      - mysql_volume:/var/lib/mysql
+    ports:
+      - "3305:3305"
+
+volumes:
+  mysql_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/tozeki/Github/inception/test_bind/data/db
+      o: bind
