@@ -1,63 +1,62 @@
 NGINX_DIR_PATH := nginx/
 NGINX_IMAGE_NAME := nginximg
-NGINX_DOCKERFILE_PATH := ./Dockerfile
-NGINX_CONTEXT_PATH := ./ #Dockerfileはこの相対パスを元に実行される
-NGINX_CONTAINAR_NAME := nginxcon
-NGINX_ALIAS_NAME := nginx #CONTAINER_NAMEがあるから不要？
+NGINX_CON_NAME := nginxcon
 
 PHP_DIR_PATH := php/
 PHP_IMAGE_NAME := phpimg
-PHP_DOCKERFILE_PATH := ./Dockerfile
-PHP_CONTEXT_PATH := ./ #Dockerfileはこの相対パスを元に実行される
-PHP_CONTAINAR_NAME := phpcon
-PHP_ALIAS_NAME := php #CONTAINER_NAMEがあるから不要？
+PHP_CON_NAME := phpcon
 
 DB_DIR_PATH := mariadb/
 DB_IMAGE_NAME := dbimg
-DB_DOCKERFILE_PATH := ./Dockerfile
-DB_CONTEXT_PATH := ./ #Dockerfileはこの相対パスを元に実行される
-DB_CONTAINAR_NAME := dbcon
-DB_ALIAS_NAME := db #CONTAINER_NAMEがあるから不要？
+DB_CON_NAME := dbcon
 
-NETWORK_NAME := test
+NETWORK_NAME := test_net
+DB_VOLUME := db_vol
+WP_VOLUME := wp_vol
 
-BIND_PATH := $(PWD)/${PHP_DIR_PATH}
-DST_PATH := /var/www/html/
-
-out:
+test:
 	echo "docker run -d --network ${NETWORK_NAME} --network-alias ${DB_ALIAS_NAME} \
-		--name ${DB_CONTAINAR_NAME} ${DB_IMAGE_NAME}"
+		--name ${DB_CON_NAME} ${DB_IMAGE_NAME}"
 
-all:
-	docker build --no-cache -t ${DB_IMAGE_NAME} -f ${DB_DIR_PATH}${DB_DOCKERFILE_PATH} ${DB_DIR_PATH}${DB_CONTEXT_PATH}
-	docker build --no-cache -t ${PHP_IMAGE_NAME} -f ${PHP_DIR_PATH}${PHP_DOCKERFILE_PATH} ${PHP_DIR_PATH}${PHP_CONTEXT_PATH}
-	docker build --no-cache -t ${NGINX_IMAGE_NAME} -f ${NGINX_DIR_PATH}${NGINX_DOCKERFILE_PATH} ${NGINX_DIR_PATH}${NGINX_CONTEXT_PATH}
+img:
+	mkdir -p ./data/db ./data/wp
+	docker build -t ${DB_IMAGE_NAME} -f ${DB_DIR_PATH}Dockerfile ${DB_DIR_PATH}.
+	docker build -t ${PHP_IMAGE_NAME} -f ${PHP_DIR_PATH}Dockerfile ${PHP_DIR_PATH}.
+	docker build -t ${NGINX_IMAGE_NAME} -f ${NGINX_DIR_PATH}Dockerfile ${NGINX_DIR_PATH}.
 
-# mkdir -p $(HOME)/data/
-# mkdir $(HOME)/data/db mkdir $(HOME)/data/wp
 run:
+	docker volume create --driver local --opt type=none \
+		--opt device=/home/tozeki/Github/inception/ex02/data/db \
+		--opt o=bind ${DB_VOLUME}
+	docker volume create --driver local --opt type=none \
+		--opt device=/home/tozeki/Github/inception/ex02/data/wp \
+		--opt o=bind ${WP_VOLUME}
 	docker network create ${NETWORK_NAME}
-	docker run -d --network ${NETWORK_NAME} --network-alias ${PHP_ALIAS_NAME} \
-		--mount type=bind,src=${BIND_PATH}index.php,dst=${DST_PATH}index.php \
-		--name ${PHP_CONTAINAR_NAME}  ${PHP_IMAGE_NAME}
-	docker run -d --network ${NETWORK_NAME} --network-alias ${NGINX_ALIAS_NAME} \
-		--mount type=bind,src=${BIND_PATH}index.php,dst=${DST_PATH}index.php \
-		--name ${NGINX_CONTAINAR_NAME} -p 80:80 ${NGINX_IMAGE_NAME}
-	docker run -d --network ${NETWORK_NAME} --network-alias ${DB_ALIAS_NAME} \
-		--name ${DB_CONTAINAR_NAME} ${DB_IMAGE_NAME}
+	docker run -d --network ${NETWORK_NAME} \
+		--mount type=volume,src=${DB_VOLUME},dst=/var/lib/mysql \
+		--name ${DB_CON_NAME} ${DB_IMAGE_NAME}
+	docker run -d --network ${NETWORK_NAME} \
+		--mount type=volume,src=${WP_VOLUME},dst=/var/www/html/wordpress \
+		--name ${PHP_CON_NAME}  ${PHP_IMAGE_NAME}
+	docker run -d -p 80:80 --network ${NETWORK_NAME} \
+		--mount type=volume,src=${WP_VOLUME},dst=/var/www/html/wordpress \
+		--name ${NGINX_CON_NAME} ${NGINX_IMAGE_NAME}
+	
+vol_clean:
+	docker volume rm ${WP_VOLUME} ${DB_VOLUME}
 
 connect_clean:
-	docker network disconnect ${NETWORK_NAME} ${PHP_CONTAINAR_NAME}
-	docker network disconnect ${NETWORK_NAME} ${NGINX_CONTAINAR_NAME}
-	docker network disconnect ${NETWORK_NAME} ${DB_CONTAINAR_NAME}
+	docker network disconnect ${NETWORK_NAME} ${PHP_CON_NAME}
+	docker network disconnect ${NETWORK_NAME} ${NGINX_CON_NAME}
+	docker network disconnect ${NETWORK_NAME} ${DB_CON_NAME}
 
 con_clean:
-	docker stop ${PHP_CONTAINAR_NAME}
-	docker stop ${NGINX_CONTAINAR_NAME}
-	docker stop ${DB_CONTAINAR_NAME}
-	docker rm ${PHP_CONTAINAR_NAME}
-	docker rm ${NGINX_CONTAINAR_NAME}
-	docker rm ${DB_CONTAINAR_NAME}
+	docker stop ${PHP_CON_NAME}
+	docker stop ${NGINX_CON_NAME}
+	docker stop ${DB_CON_NAME}
+	docker rm ${PHP_CON_NAME}
+	docker rm ${NGINX_CON_NAME}
+	docker rm ${DB_CON_NAME}
 
 net_clean:
 	docker network rm ${NETWORK_NAME}
@@ -70,4 +69,4 @@ none_clean:
 
 clean: connect_clean con_clean net_clean
 
-fclean: clean img_clean
+fclean: clean img_clean vol_clean
