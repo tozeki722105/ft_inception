@@ -3,14 +3,14 @@ NGINX_IMAGE_NAME := nginximg
 NGINX_DOCKERFILE_PATH := ./Dockerfile
 NGINX_CONTEXT_PATH := ./ #Dockerfileはこの相対パスを元に実行される
 NGINX_CONTAINAR_NAME := nginxcon
-NGINX_ALIAS_NAME := nginx
+NGINX_ALIAS_NAME := nginx #CONTAINER_NAMEがあるから不要？
 
 PHP_DIR_PATH := php/
 PHP_IMAGE_NAME := phpimg
 PHP_DOCKERFILE_PATH := ./Dockerfile
 PHP_CONTEXT_PATH := ./ #Dockerfileはこの相対パスを元に実行される
 PHP_CONTAINAR_NAME := phpcon
-PHP_ALIAS_NAME := php
+PHP_ALIAS_NAME := php #CONTAINER_NAMEがあるから不要？
 
 NETWORK_NAME := test
 
