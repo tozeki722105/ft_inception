@@ -23,3 +23,5 @@ RUN chown -R mysql:mysql /var/lib/mysql /etc/mysql /var/run/mysqld
 COPY ep.sh /usr/local/bin/ep.sh
 
 RUN chmod +x /usr/local/bin/ep.sh
+
+ENTRYPOINT ["/usr/local/bin/ep.sh"]
