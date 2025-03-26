@@ -1,0 +1,55 @@
+version: "3.0"
+
+services:
+  db:
+    build:
+      context: ./mariadb
+      dockerfile: Dockerfile
+    container_name: dbcon
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wordpress-network
+
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: phpcon
+    volumes:
+      - wp_data:/var/www/html/wordpress
+    networks:
+      - wordpress-network
+    depends_on:
+      - db
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginxcon
+    ports:
+      - "80:80"
+    volumes:
+      - wp_data:/var/www/html/wordpress
+    networks:
+      - wordpress-network
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${LOCAL_VOLUME_PATH}db
+      o: bind
+  wp_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${LOCAL_VOLUME_PATH}wp
+      o: bind
+
+networks:
+  wordpress-network:
