@@ -11,6 +11,7 @@ DB_IMAGE_NAME := dbimg
 DB_CON_NAME := dbcon
 
 NETWORK_NAME := test_net
+LOCAL_VOLUME_PATH := /home/tozeki/Github/inception/ex02/data/
 DB_VOLUME := db_vol
 WP_VOLUME := wp_vol
 
@@ -26,10 +27,10 @@ img:
 
 run:
 	docker volume create --driver local --opt type=none \
-		--opt device=/home/tozeki/Github/inception/ex02/data/db \
+		--opt device=${LOCAL_VOLUME_PATH}db \
 		--opt o=bind ${DB_VOLUME}
 	docker volume create --driver local --opt type=none \
-		--opt device=/home/tozeki/Github/inception/ex02/data/wp \
+		--opt device=${LOCAL_VOLUME_PATH}wp \
 		--opt o=bind ${WP_VOLUME}
 	docker network create ${NETWORK_NAME}
 	docker run -d --network ${NETWORK_NAME} \
