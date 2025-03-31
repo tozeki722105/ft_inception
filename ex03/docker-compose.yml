@@ -1,4 +1,5 @@
-version: "3.0"
+# docker compose up -d --build
+# version: "3.0"
 
 services:
   db:
@@ -30,6 +31,7 @@ services:
     container_name: nginxcon
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - wp_data:/var/www/html/wordpress
     networks:
