@@ -1,16 +1,14 @@
 # docker compose up -d --build
-# version: "3.0"
 
 services:
   db:
+    container_name: dbcon
     build:
       context: ./mariadb
-      dockerfile: Dockerfile
       args:
         DB_NAME: ${DB_NAME}
         DB_USER_NAME: ${DB_USER_NAME}
         DB_PASS: ${DB_PASS}
-    container_name: dbcon
     init: true
     env_file: .env
     volumes:
@@ -19,10 +17,9 @@ services:
       - wordpress-network
 
   php:
+    container_name: phpcon
     build:
       context: ./php
-      dockerfile: Dockerfile
-    container_name: phpcon
     init: true
     env_file: .env
     volumes:
@@ -33,16 +30,15 @@ services:
       - db
 
   nginx:
+    container_name: nginxcon
     build:
       context: ./nginx
-      dockerfile: Dockerfile
       args:
         DOMAIN_NAME: ${DOMAIN_NAME}
         SITE_COUNTRY: ${SITE_COUNTRY}
         SITE_STATE_OR_PROVINCE: ${SITE_STATE_OR_PROVINCE}
         SITE_LOCALITY: ${SITE_LOCALITY}
         SITE_ORGANIZATION: ${SITE_ORGANIZATION}
-    container_name: nginxcon
     init: true
     env_file: .env
     ports:
@@ -52,7 +48,7 @@ services:
     networks:
       - wordpress-network
     depends_on:
-      - db
+      - php
 
 volumes:
   db_data:
