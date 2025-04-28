@@ -6,7 +6,13 @@ services:
     build:
       context: ./mariadb
       dockerfile: Dockerfile
+      args:
+        DB_NAME: ${DB_NAME}
+        DB_USER_NAME: ${DB_USER_NAME}
+        DB_PASS: ${DB_PASS}
     container_name: dbcon
+    init: true
+    env_file: .env
     volumes:
       - db_data:/var/lib/mysql
     networks:
@@ -17,6 +23,8 @@ services:
       context: ./php
       dockerfile: Dockerfile
     container_name: phpcon
+    init: true
+    env_file: .env
     volumes:
       - wp_data:/var/www/html/wordpress
     networks:
@@ -28,7 +36,15 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
+      args:
+        DOMAIN_NAME: ${DOMAIN_NAME}
+        SITE_COUNTRY: ${SITE_COUNTRY}
+        SITE_STATE_OR_PROVINCE: ${SITE_STATE_OR_PROVINCE}
+        SITE_LOCALITY: ${SITE_LOCALITY}
+        SITE_ORGANIZATION: ${SITE_ORGANIZATION}
     container_name: nginxcon
+    init: true
+    env_file: .env
     ports:
       - "443:443"
     volumes:

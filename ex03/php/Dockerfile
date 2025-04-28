@@ -1,6 +1,6 @@
 FROM debian:bullseye
 
-RUN apt update && apt install -y vim less php-fpm php7.4-mysqli curl
+RUN apt update && apt install -y vim less php7.4-fpm php7.4-mysqli curl htop
 
 COPY ./www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
