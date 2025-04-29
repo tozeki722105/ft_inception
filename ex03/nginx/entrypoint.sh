@@ -10,4 +10,3 @@ openssl x509 -signkey /etc/nginx/ssl/server.key -req -in /etc/nginx/ssl/server.c
 -out /etc/nginx/ssl/server.crt -days 365
 
 nginx -g "daemon off;"
-
