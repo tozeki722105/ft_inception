@@ -5,16 +5,15 @@ services:
     container_name: dbcon
     build:
       context: ./mariadb
-      args:
-        DB_NAME: ${DB_NAME}
-        DB_USER_NAME: ${DB_USER_NAME}
-        DB_PASS: ${DB_PASS}
     init: true
     env_file: .env
     volumes:
       - db_data:/var/lib/mysql
     networks:
       - wordpress-network
+    secrets:
+      - db_root_pass
+      - db_user_pass
 
   php:
     container_name: phpcon
@@ -28,17 +27,15 @@ services:
       - wordpress-network
     depends_on:
       - db
+    secrets:
+      - wp_admin_pass
+      - wp_user_pass
+      - db_user_pass
 
   nginx:
     container_name: nginxcon
     build:
       context: ./nginx
-      args:
-        DOMAIN_NAME: ${DOMAIN_NAME}
-        SITE_COUNTRY: ${SITE_COUNTRY}
-        SITE_STATE_OR_PROVINCE: ${SITE_STATE_OR_PROVINCE}
-        SITE_LOCALITY: ${SITE_LOCALITY}
-        SITE_ORGANIZATION: ${SITE_ORGANIZATION}
     init: true
     env_file: .env
     ports:
@@ -66,3 +63,13 @@ volumes:
 
 networks:
   wordpress-network:
+
+secrets:
+  db_root_pass:
+    file: ./secrets/db_root_pass.txt
+  db_user_pass:
+    file: ./secrets/db_user_pass.txt
+  wp_admin_pass:
+    file: ./secrets/wp_admin_pass.txt
+  wp_user_pass:
+    file: ./secrets/wp_user_pass.txt
