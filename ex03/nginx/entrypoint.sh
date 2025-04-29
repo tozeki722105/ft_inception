@@ -1,12 +1,14 @@
 #! /bin/bash
 
+SSL_DIR="/etc/nginx/ssl"
+
 sleep 15
 
-mkdir /etc/nginx/ssl && \
-openssl genrsa -out /etc/nginx/ssl/server.key 2048 && \
-openssl req -new -key /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.csr \
--subj "/C=${SITE_COUNTRY}/ST=${SITE_STATE_OR_PROVINCE}/L=${SITE_LOCALITY}/O=${SITE_ORGANIZATION}/CN=${DOMAIN_NAME}" && \
-openssl x509 -signkey /etc/nginx/ssl/server.key -req -in /etc/nginx/ssl/server.csr \
--out /etc/nginx/ssl/server.crt -days 365
+mkdir ${SSL_DIR} && \
+openssl genpkey -algorithm ED25519 -out "${SSL_DIR}/server.key" && \
+openssl req -new -key ${SSL_DIR}/server.key -out ${SSL_DIR}/server.csr \
+	-subj "/C=${SITE_COUNTRY}/ST=${SITE_STATE_OR_PROVINCE}/L=${SITE_LOCALITY}/O=${SITE_ORGANIZATION}/CN=${DOMAIN_NAME}" && \
+openssl x509 -req -in ${SSL_DIR}/server.csr -signkey ${SSL_DIR}/server.key \
+	-out ${SSL_DIR}/server.crt -days 365
 
 nginx -g "daemon off;"
