@@ -4,7 +4,7 @@ CONTEXT_PATH := ./ #Dockerfileはこの相対パスを元に実行される
 CONTAINAR_NAME := testcon
 
 all:
-	docker build --no-cache -t ${IMAGE_NAME} -f ${DOCKERFILE_PATH} ${CONTEXT_PATH}
+	docker build -t ${IMAGE_NAME} -f ${DOCKERFILE_PATH} ${CONTEXT_PATH}
 
 run:
 	docker run -p 80:80 -it ${IMAGE_NAME} 

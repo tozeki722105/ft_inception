@@ -1,6 +1,6 @@
 FROM debian:bullseye
 
-RUN apt update && apt install -y vim less nginx mariadb-server php-fpm wget tar
+RUN apt update && apt install -y vim less nginx mariadb-server php-fpm wget tar htop mariadb-client
 
 COPY ./site-available_default /etc/nginx/sites-available/default
 
