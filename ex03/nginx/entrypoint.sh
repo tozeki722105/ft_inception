@@ -2,7 +2,7 @@
 
 SSL_DIR="/etc/nginx/ssl"
 
-sleep 15
+sed -i "s/server_name _;/server_name ${DOMAIN_NAME};/" /etc/nginx/sites-available/default
 
 mkdir ${SSL_DIR} && \
 openssl genrsa -out "${SSL_DIR}/server.key" 2048 && \
