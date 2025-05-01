@@ -1,6 +1,5 @@
 #! /bin/bash
 
-DB_ROOT_PASS=$(cat /run/secrets/db_root_pass)
 DB_USER_PASS=$(cat /run/secrets/db_user_pass)
 
 service mariadb start

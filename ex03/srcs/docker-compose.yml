@@ -2,50 +2,55 @@
 
 services:
   db:
+    image: mariadb
     container_name: dbcon
     build:
-      context: ./mariadb
+      context: ./requirements/mariadb
     init: true
+    restart: always
     env_file: .env
+    networks:
+      - lemp-network
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - wordpress-network
     secrets:
-      - db_root_pass
       - db_user_pass
 
-  php:
-    container_name: phpcon
+  wp:
+    image: wordpress
+    container_name: wpcon
     build:
-      context: ./php
+      context: ./requirements/wordpress
     init: true
+    restart: always
     env_file: .env
+    networks:
+      - lemp-network
     volumes:
       - wp_data:/var/www/html/wordpress
-    networks:
-      - wordpress-network
-    depends_on:
-      - db
     secrets:
       - wp_admin_pass
       - wp_user_pass
       - db_user_pass
+    depends_on:
+      - db
 
   nginx:
+    image: nginx
     container_name: nginxcon
     build:
-      context: ./nginx
+      context: ./requirements/nginx
     init: true
+    restart: always
     env_file: .env
-    ports:
-      - "443:443"
+    networks:
+      - lemp-network
     volumes:
       - wp_data:/var/www/html/wordpress
-    networks:
-      - wordpress-network
+    ports:
+      - "443:443"
     depends_on:
-      - php
+      - wp
 
 volumes:
   db_data:
@@ -62,14 +67,12 @@ volumes:
       o: bind
 
 networks:
-  wordpress-network:
+  lemp-network:
 
 secrets:
-  db_root_pass:
-    file: ./secrets/db_root_pass.txt
   db_user_pass:
-    file: ./secrets/db_user_pass.txt
+    file: ../secrets/db_user_pass.txt
   wp_admin_pass:
-    file: ./secrets/wp_admin_pass.txt
+    file: ../secrets/wp_admin_pass.txt
   wp_user_pass:
-    file: ./secrets/wp_user_pass.txt
+    file: ../secrets/wp_user_pass.txt
