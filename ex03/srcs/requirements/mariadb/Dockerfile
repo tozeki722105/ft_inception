@@ -1,6 +1,8 @@
 FROM debian:bullseye
 
-RUN apt update && apt install -y vim less mariadb-server htop mariadb-client
+RUN apt update && apt install -y mariadb-server mariadb-client
+
+# RUN apt install -y vim less htop
 
 COPY ./50-server.conf /etc/mysql/mariadb.conf.d/50-server.cnf
 

@@ -1,6 +1,8 @@
 FROM debian:bullseye
 
-RUN apt update && apt install -y vim less php7.4-fpm php7.4-mysqli curl htop mariadb-client
+RUN apt update && apt install -y php7.4-fpm php7.4-mysqli curl mariadb-client
+
+# RUN apt install -y vim less htop
 
 COPY ./www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
