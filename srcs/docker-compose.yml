@@ -1,0 +1,76 @@
+services:
+  db:
+    image: mariadb
+    container_name: dbcon
+    build:
+      context: ./requirements/mariadb
+    init: true
+    restart: always
+    env_file: .env
+    networks:
+      - lemp-network
+    volumes:
+      - db_data:/var/lib/mysql
+    secrets:
+      - db_user_pass
+
+  wp:
+    image: wordpress
+    container_name: wpcon
+    build:
+      context: ./requirements/wordpress
+    init: true
+    restart: always
+    env_file: .env
+    networks:
+      - lemp-network
+    volumes:
+      - wp_data:/var/www/html/wordpress
+    secrets:
+      - wp_admin_pass
+      - wp_user_pass
+      - db_user_pass
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx
+    container_name: nginxcon
+    build:
+      context: ./requirements/nginx
+    init: true
+    restart: always
+    env_file: .env
+    networks:
+      - lemp-network
+    volumes:
+      - wp_data:/var/www/html/wordpress
+    ports:
+      - "443:443"
+    depends_on:
+      - wp
+
+volumes:
+  db_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${LOCAL_VOLUME_PATH}db
+      o: bind
+  wp_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${LOCAL_VOLUME_PATH}wp
+      o: bind
+
+networks:
+  lemp-network:
+
+secrets:
+  db_user_pass:
+    file: ../secrets/db_user_pass.txt
+  wp_admin_pass:
+    file: ../secrets/wp_admin_pass.txt
+  wp_user_pass:
+    file: ../secrets/wp_user_pass.txt
