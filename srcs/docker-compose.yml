@@ -55,13 +55,13 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: ${LOCAL_VOLUME_PATH}db
+      device: ${LOCAL_VOLUME_PATH}/data/db
       o: bind
   wp_data:
     driver: local
     driver_opts:
       type: none
-      device: ${LOCAL_VOLUME_PATH}wp
+      device: ${LOCAL_VOLUME_PATH}/data/wp
       o: bind
 
 networks:
