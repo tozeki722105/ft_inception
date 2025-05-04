@@ -5,17 +5,12 @@ WP_ADMIN_PASS=$(cat /run/secrets/wp_admin_pass)
 WP_USER_PASS=$(cat /run/secrets/wp_user_pass)
 
 echo "Waiting for MariaDB database to be ready..."
-limit=8
-i=0
-while ! mysqladmin ping -h dbcon -u ${DB_USER_NAME} -p${DB_USER_PASS} 2>/dev/null | grep "mysqld is alive" 2>/dev/null ; do
-	if (($i == $limit)); then
-		echo "Error: Failed to connect to MariaDB"
-		exit 2
-	fi
-	((i++))
-	sleep 2;
-done
-echo "MariaDB database connection established successfully."
+# MariaDBコンテナは一度起動後にstop→再起動するため、確実に起動するまで待機
+sleep 15
+if ! mysqladmin ping -h dbcon -u ${DB_USER_NAME} -p${DB_USER_PASS} 2>/dev/null | grep "mysqld is alive" 2>/dev/null ; then
+	echo "Error: Failed to connect to MariaDB"
+	exit 2
+fi
 
 if [[ ! -f /var/www/html/wordpress/wp-config.php ]]; then
 	echo "Initializing WordPress installation..."
