@@ -1,4 +1,4 @@
-include ./srcs/.env
+LOCAL_VOLUME_PATH := `grep 'LOCAL_VOLUME_PATH' srcs/.env | awk -F '=' '{print $$2}'`
 
 all: 
 	mkdir -p ${LOCAL_VOLUME_PATH}/data/wp ${LOCAL_VOLUME_PATH}/data/db
