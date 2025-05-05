@@ -1,5 +1,6 @@
 LOCAL_VOLUME_PATH := `grep 'LOCAL_VOLUME_PATH' srcs/.env | awk -F '=' '{print $$2}'`
 
+
 all: 
 	mkdir -p ${LOCAL_VOLUME_PATH}/data/wp ${LOCAL_VOLUME_PATH}/data/db
 	make up
@@ -23,4 +24,7 @@ fclean: clean
 none_clean:
 	docker image ls | awk 'NR>1 {print $$1,$$3}' | grep '<none>' | awk '{print $$2}' | xargs docker image rm
 
+setup:
+	mkdir secrets
+	touch secrets/db_user_pass.txt secrets/wp_admin_pass.txt secrets/wp_user_pass.txt srcs/.env
 	
