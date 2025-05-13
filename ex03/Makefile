@@ -17,10 +17,10 @@ clean: down
 
 fclean: clean
 	docker volume ls -q | xargs docker volume rm
-	docker image ls | awk 'NR>1 {print $$1,$$3}' | grep -e mariadb -e nginx -e wordpress | awk '{print $$2}' | xargs docker image rm
+	docker image ls | awk 'NR>1 {print \$1,\$3}' | grep -e mariadb -e nginx -e wordpress | awk '{print \$2}' | xargs docker image rm
 	docker builder prune -f
 
 none_clean:
-	docker image ls | awk 'NR>1 {print $$1,$$3}' | grep '<none>' | awk '{print $$2}' | xargs docker image rm
+	docker image ls | awk 'NR>1 {print \$1,\$3}' | grep '<none>' | awk '{print \$2}' | xargs docker image rm
 
 	
